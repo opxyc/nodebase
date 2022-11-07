@@ -1,0 +1,38 @@
+version: '3.7'
+
+services:
+  server:
+    build:
+      context: ./
+      target: development-build
+      dockerfile: Dockerfile
+    container_name: server
+    # user: "your user id"
+    ports:
+      - '3000:3000'
+    volumes:
+      - ./:/app:rw
+    working_dir: /app
+    restart: 'unless-stopped'
+    links:
+      - db
+    depends_on:
+      - db
+    environment:
+      - DB_HOST=db
+      - DB_PORT=5432
+  db:
+    image: postgres:14
+    restart: 'unless-stopped'
+    volumes:
+      - ${HOME}/nodebase:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: nodebase
+
+volumes:
+  data:
+    driver: local
